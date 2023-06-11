@@ -4,15 +4,19 @@
 module M_TRNG #(
     parameter N_DIM = 3
 ) (
-    input real [N_DIM - 1] x;
-    input real y;
+    CTRL C,
+    VLINK [N_DIM - 1] VIN;
+    VLINK VOUT;
+    DLINK DIAG;
 );
 
-genvar i;
-genvar j;
+// i for column j for row
+genvar i,j;
 generate
     for (i = 0; i < N_DIM; i = i + 1) begin
-        for (j = 0; j < i; j = j + 1) begin
+        PE_B PB0(C, VB[i][0], HB[i][0], DB[i], DB[i+1]); // Boundary Processors
+        for (j = 0; j < N_DIM - i; j = j + 1) begin
+            PE_L PL0(C, HB[i][j], HB[i][j+1], VB[i][j], VB[i+1][j]); // Internal Processors
         end
     end    
 endgenerate

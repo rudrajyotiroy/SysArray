@@ -1,27 +1,43 @@
 `ifndef BUF
 `define BUF
 
-module PE_L  (
-    input real x_in,
-    input real c_in,
-    input real s_in,
-    input clk,
-    input rst,
-    output real x_out,
-    output real c_out,
-    output real s_out
+// Horizontal Buffer
+module HBUF  
+(
+    CTRL C,
+    HLINK.IN SH_IN,
+    HLINK.OUT SH_OUT
 );
 
-always @(posedge clk) begin
-    if (rst) begin
-        x_out = 0;
-        c_out = 0;
-        s_out = 0;
+always @(posedge C.clk) begin
+    if (C.rst) begin
+        SH_OUT.s <= 0;
+        SH_OUT.c <= 0;
+        SH_OUT.z <= 0;
     end
     else begin
-        x_out = x_in;
-        c_out = c_in;
-        s_out = s_in;
+        SH_OUT.s <= SH_IN.s;
+        SH_OUT.c <= SH_IN.c;
+        SH_OUT.z <= SH_IN.z;
+    end
+end
+
+endmodule
+
+// Vertical Buffer
+module VBUF  
+(
+    CTRL C,
+    VLINK.IN SV_IN,
+    VLINK.OUT SV_OUT
+);
+
+always @(posedge C.clk) begin
+    if (C.rst) begin
+        SV_OUT.x <= 0;
+    end
+    else begin
+        SV_OUT.x <= SH_IN.x;
     end
 end
 

@@ -1,31 +1,33 @@
 `ifndef PE_L
 `define PE_L
 
+// Internal Processing Element (PE)
 module PE_L  (
-    input real x_in,
-    input real c_in,
-    input real s_in,
-    input clk,
-    input rst,
-    output real x_out,
-    output real c_out,
-    output real s_out
+    CTRL C,
+    HLINK.IN SH_IN,
+    HLINK.OUT SH_OUT,
+    VLINK.IN SV_IN,
+    VLINK.OUT SV_OUT
 );
 
-real x;
+real r;
 
-always @(posedge clk) begin
-    if (rst) begin
-        x = 0;
-        x_out = 0;
-        c_out = 0;
-        s_out = 0;
+always @(posedge C.clk) begin
+    if (C.rst) begin
+        r <= 0;
+        SH_OUT.s <= 0;
+        SH_OUT.c <= 0;
+        SH_OUT.z <= 0;
+        SV_OUT.x <= 0;
     end
     else begin
-        x_out = - x * s_in + c_in * x_in;
-        c_out = c_in;
-        s_out = s_in;
-        x = c_in * x + s_in * x_in;
+        SH_OUT.s <= SH_IN.s;
+        SH_OUT.c <= SH_IN.c;
+        SH_OUT.z <= SH_IN.z;
+        SV_OUT.x = SV_IN.x - r * SH_IN.z;
+        if (!C.freeze) begin
+            r = SH_IN.s * SV_IN.x + SH_IN.c * r;
+        end
     end
 end
     
